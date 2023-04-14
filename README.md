@@ -6,7 +6,7 @@ ChatGPTのStream APIをAndroidアプリで使う
   - Version Catalogの保管が効くようにGradleをKotlinにしました。
 - Dagger Hiltを使ったDIの実装
 - View Bindingを使ったViewの実装
-- [ChatGPTのStreamモード](https://platform.openai.com/docs/api-reference/completions/create#completions/create-stream)をokhttp-sseを使って実装
+- [ChatGPTのStreamモード](https://platform.openai.com/docs/api-reference/completions/create#completions/create-stream)を[okhttp-sse](https://github.com/square/okhttp/tree/master/okhttp-sse)を使って実装
 - Jsonの変換にGsonを使用
 
 ## 動作している様子
