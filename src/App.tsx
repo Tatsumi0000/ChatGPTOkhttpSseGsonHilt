@@ -1,6 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import './requestNotificationPermission'
+import { requestNotificationPermission } from './requestNotificationPermission';
 
 function App() {
   return (
@@ -19,6 +21,9 @@ function App() {
           Learn React
         </a>
       </header>
+      <button onClick={requestNotificationPermission}>
+        実行
+        </button>
     </div>
   );
 }

@@ -1,0 +1,6 @@
+{
+    "env": {
+        "serviceworker": true,
+        "es6": true
+    }
+}
