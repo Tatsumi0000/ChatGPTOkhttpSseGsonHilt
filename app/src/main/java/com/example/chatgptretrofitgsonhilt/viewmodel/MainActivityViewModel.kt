@@ -20,6 +20,7 @@ class MainActivityViewModel @Inject constructor(
 
     data class UiState(
         val generatedText: String = "",
+        val isLoading: Boolean = false
     )
 
     sealed interface UiEvent {
@@ -30,19 +31,32 @@ class MainActivityViewModel @Inject constructor(
     private val _state = MutableStateFlow(UiState())
     val state = _state.asStateFlow()
     private val _event = Channel<UiEvent>()
-    val event: Flow<UiEvent> = _event.consumeAsFlow()
+    val event: Flow<UiEvent> = _event.receiveAsFlow()
 
     init {
         viewModelScope.launch {
             useCase.state.collect { state ->
                 when (state) {
+                    is State.Open -> {
+                        _state.update { state ->
+                            UiState("", true)
+                        }
+                    }
                     is State.Event -> {
                         _state.update {
-                            UiState(it.generatedText + state.response)
+                            UiState(it.generatedText + state.response, it.isLoading)
                         }
                     }
                     is State.Closed -> {
                         _event.send(UiEvent.ShowSnackBar("完了しました"))
+                        _state.update { state ->
+                            UiState(state.generatedText, false)
+                        }
+                    }
+                    is State.Failure -> {
+                        _state.update { state ->
+                            UiState(state.generatedText, false)
+                        }
                     }
                     else -> {
 
@@ -53,17 +67,23 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun start() {
-
         viewModelScope.launch {
-            _state.update { UiState("") }
-            val messages = listOf(
-                Messages(Messages.Role.SYSTEM, "あなたは生粋の関西人です。"),
-                Messages(Messages.Role.ASSISTANT, "大阪名物について"),
-                Messages(Messages.Role.USER, "150文字以内かつ関西弁で紹介して下さい。"),
-            )
-            val gpt35Turbo = GPT35Turbo(messages = messages)
-            useCase.postCompletions(gpt35Turbo)
+            _state.update { state ->
+                UiState(state.generatedText, !state.isLoading)
+            }
+            println(_state.value)
+            if (_state.value.isLoading) {
+                val messages = listOf(
+                    Messages(Messages.Role.SYSTEM, "あなたは生粋の関西人です。"),
+                    Messages(Messages.Role.ASSISTANT, "大阪名物について"),
+                    Messages(Messages.Role.USER, "150文字以内かつ関西弁で紹介して下さい。"),
+                )
+                val gpt35Turbo = GPT35Turbo(messages = messages)
+                useCase.postCompletions(gpt35Turbo)
+            } else {
+                useCase.cancelCompletions()
+                _event.send(UiEvent.ShowSnackBar("中断しました"))
+            }
         }
-
     }
 }

@@ -44,10 +44,8 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collect { event ->
-                    println(":::::::::")
                     when (event) {
                         is MainActivityViewModel.UiEvent.ShowSnackBar -> {
-                            println("LLLLLLL")
                             Snackbar.make(view, event.message, Snackbar.LENGTH_LONG).show()
                         }
                         is MainActivityViewModel.UiEvent.Empty -> {}
