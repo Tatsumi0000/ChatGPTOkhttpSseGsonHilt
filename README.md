@@ -1,6 +1,8 @@
 # ChatGPTRetrofitGsonHilt
 ChatGPTのStream APIをAndroidアプリで使う
 
+https://blog.aespa.love/develop-chatgpt-android-app-using-with-stream-mode
+
 ## 使用技術
 - Version Catalogを使ったマルチモジュール構成
   - Version Catalogの保管が効くようにGradleをKotlinにしました。
